@@ -2,14 +2,10 @@ from datetime import datetime
 
 from flask import Flask, request
 
-from chatgpt.logger import logging
 from chatgpt.helper.database_api import get_user, get_coupon, update_coupon, update_user, update_messages, create_user
 from chatgpt.helper.twilio_api import send_message
 from chatgpt.helper.utils import generate_messages
 from chatgpt.helper.conversation import chat_completion
-
-logger = logging.getLogger(__name__)
-
 
 app = Flask(__name__)
 
@@ -22,15 +18,14 @@ def home():
 @app.route('/twilio', methods=['POST'])
 def twilio():
     try:
-        logger.info('A new twilio request...')
+        print('A new twilio request...')
         data = request.form.to_dict()
         query = data['Body']
         sender_id = data['From']
         user_name = data['ProfileName']
 
-        logger.info(sender_id)
-        logger.info(query)
-        logger.info(user_name)
+        print(sender_id)
+        print(query)
 
         user = get_user(sender_id)
 
@@ -65,7 +60,9 @@ def twilio():
             else:
                 messages = generate_messages(user['messages'], query)
                 response = chat_completion(messages)
-                update_messages(sender_id, query, response, user['messageCount'])
+                print(response)
+                update_messages(sender_id, query, response,
+                                user['messageCount'])
                 send_message(sender_id, response)
         else:
             # if not create
@@ -88,9 +85,9 @@ def twilio():
             }
             create_user(user)
             send_message(sender_id, response)
-        logger.info('Request success.')
+        print('Request success.')
     except:
-        logger.info('Request failed.')
+        print('Request failed.')
         pass
 
     return 'OK', 200

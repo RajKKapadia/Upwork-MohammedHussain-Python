@@ -1,6 +1,3 @@
-from config import config
-
-
 def generate_messages(messages: list, query: str) -> list:
     formated_messages = [
         {

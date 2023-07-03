@@ -1,9 +1,6 @@
 from twilio.rest import Client
 
 from config import config
-from chatgpt.logger import logging
-
-logger = logging.getLogger(__name__)
 
 account_sid = config.TWILIO_SID
 auth_token = config.TWILIO_TOKEN
@@ -20,10 +17,11 @@ def send_message(to: str, message: str) -> None:
     Returns:
         - None
     '''
-    _ = client.messages.create(
-        from_=config.FROM,
-        body=message,
-        to=to
-    )
-    logger.info('Message sent.')
-    
+    try:
+        _ = client.messages.create(
+            from_=config.FROM,
+            body=message,
+            to=to
+        )
+    except:
+        pass
